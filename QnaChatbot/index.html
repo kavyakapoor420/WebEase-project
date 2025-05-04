@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BetterWeb Chatbot</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div id="chatbot-container" class="chatbot-container">
+    <!-- Chat Icon Button -->
+    <button id="open-btn" class="chat-btn">
+      🤖
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chat-window" class="chat-window hidden">
+      <div class="chat-header">
+        <h2>BetterWeb ChatBot</h2>
+        <button id="close-btn">✖</button>
+      </div>
+
+      <div id="chat-messages" class="chat-messages"></div>
+
+      <!-- <div class="chat-input">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Ask me anything..."
+        />
+        <button id="mic-btn" title="Speak your message">🎤</button>
+        <button id="send-btn">➤</button>
+      </div> -->
+
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Ask me anything..." />
+        <button id="mic-btn" title="Speak your message">🎤</button>
+        <button id="send-btn">➤</button>
+      </div>
+      
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

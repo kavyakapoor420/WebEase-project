@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Questionnaire</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #dcd6f7 0%, #c6defc 100%);
+    color: #555;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #container {
+    background: #fafaff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(150, 150, 180, 0.2);
+    width: 90%;
+    max-width: 600px;
+    padding: 2em 3em;
+    box-sizing: border-box;
+  }
+  h1 {
+    text-align: center;
+    color: #a89cc8;
+    margin-bottom: 1.5em;
+  }
+  .question {
+    font-size: 1.3em;
+    margin-bottom: 1.5em;
+    min-height: 100px;
+  }
+  .options label {
+    display: block;
+    background: #f9f9fc;
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background 0.3s ease;
+  }
+  .options label:hover {
+    background: #d1c4e9;
+  }
+  input[type="radio"] {
+    margin-right: 15px;
+    transform: scale(1.3);
+    vertical-align: middle;
+  }
+  input[type="text"] {
+    margin-left: 40px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    width: calc(100% - 60px);
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    display: block;
+  }
+  #navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2em;
+  }
+  button {
+    background-color: #a89cc8;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(168, 156, 200, 0.4);
+    transition: background-color 0.3s ease;
+  }
+  button:disabled {
+    background-color: #d3cde6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  button:hover:not(:disabled) {
+    background-color: #8c7fcf;
+  }
+  #progress {
+    text-align: center;
+    margin-top: 1em;
+    font-size: 1em;
+    color: #666;
+  }
+  #result {
+    background: #e8f5e9;
+    border: 2px solid #4caf50;
+    color: #2e7d32;
+    padding: 1.5em;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 2em;
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <div id="container">
+    <h1>Disability Diagnosis Questionnaire</h1>
+    <form id="questionnaireForm">
+      <div class="question" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div id="navigation">
+        <button type="button" id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
+        <button type="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button type="button" id="submitBtn" onclick="evaluateAnswers()" style="display:none;">Submit</button>
+      </div>
+      <div id="progress"></div>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 'q1',
+        text: 'Do you have difficulty reading text on screens or printed materials?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q2',
+        text: 'Do you find it challenging to spell words correctly?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q3',
+        text: 'Do you have difficulty maintaining focus on tasks or conversations?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q4',
+        text: 'Do bright or flickering lights cause you discomfort or headaches?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q5',
+        text: 'Do you experience memory problems or difficulty processing information?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q6',
+        text: 'Do you feel dizzy or nauseous during motion, such as in vehicles or on escalators?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q7',
+        text: 'Do bright lights or glare cause you discomfort or headaches?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q8',
+        text: 'Do you often feel restless or have difficulty sitting still?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q9',
+        text: 'Do you avoid certain lighting conditions or environments because of light sensitivity?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q10',
+        text: 'Do you experience frequent headaches, dizziness, or sensory overload?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q11',
+        text: 'Do you avoid activities involving movement due to discomfort?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      },
+      {
+        id: 'q12',
+        text: 'Do you have difficulty understanding written instructions or organizing thoughts?',
+        options: ['Never', 'Rarely', 'Sometimes', 'Often']
+      }
+    ];
+
+    const questionDisabilityMap = {
+      q1: ['Visual Disabilities'],
+      q2: ['Dyslexia/Learning Disabilities'],
+      q3: ['ADHD'],
+      q4: ['Photosensitivity'],
+      q5: ['Neurological/Cognitive Needs'],
+      q6: ['Motion Sensitivity'],
+      q7: ['Visual Disabilities'],
+      q8: ['ADHD'],
+      q9: ['Photosensitivity'],
+      q10: ['Neurological/Cognitive Needs'],
+      q11: ['Motion Sensitivity'],
+      q12: ['Dyslexia/Learning Disabilities']
+    };
+
+    let currentQuestionIndex = 0;
+    const totalQuestions = questions.length;
+
+    const form = document.getElementById('questionnaireForm');
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const progress = document.getElementById('progress');
+    const resultDiv = document.getElementById('result');
+
+    function renderQuestion(index) {
+      const question = questions[index];
+      questionText.textContent = question.text;
+      optionsContainer.innerHTML = '';
+
+      question.options.forEach((option, i) => {
+        const optionId = `${question.id}_option${i}`;
+        const label = document.createElement('label');
+        label.htmlFor = optionId;
+        label.className = 'option-label';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = question.id;
+        radio.id = optionId;
+        radio.value = option;
+
+        radio.addEventListener('change', (event) => {
+          if (option === 'Other') {
+            otherInput.disabled = false;
+            otherInput.focus();
+          } else {
+            otherInput.disabled = true;
+            otherInput.value = '';
+          }
+        });
+
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(option));
+
+        if (option === 'Other') {
+          const otherInput = document.createElement('input');
+          otherInput.type = 'text';
+          otherInput.name = `${question.id}_other`;
+          otherInput.placeholder = 'Please specify';
+          otherInput.disabled = true;
+          otherInput.className = 'other-input';
+          label.appendChild(otherInput);
+        }
+
+        optionsContainer.appendChild(label);
+      });
+
+      progress.textContent = `Question ${index + 1} of ${totalQuestions}`;
+
+      prevBtn.disabled = index === 0;
+      nextBtn.style.display = index === totalQuestions - 1 ? 'none' : 'inline-block';
+      submitBtn.style.display = index === totalQuestions - 1 ? 'inline-block' : 'none';
+
+      resultDiv.style.display = 'none';
+      resultDiv.innerHTML = '';
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < totalQuestions - 1) {
+        currentQuestionIndex++;
+        renderQuestion(currentQuestionIndex);
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion(currentQuestionIndex);
+      }
+    }
+
+    function evaluateAnswers() {
+      const selectedDisabilities = new Set();
+
+      questions.forEach(q => {
+        const radios = form.elements[q.id];
+        let selectedValue = null;
+        if (radios) {
+          if (radios.length) {
+            for (const radio of radios) {
+              if (radio.checked) {
+                selectedValue = radio.value;
+                break;
+              }
+            }
+          } else {
+            if (radios.checked) {
+              selectedValue = radios.value;
+            }
+          }
+        }
+        if (selectedValue && selectedValue !== 'Never') {
+          questionDisabilityMap[q.id].forEach(d => selectedDisabilities.add(d));
+        }
+      });
+
+      if (selectedDisabilities.size === 0) {
+        resultDiv.style.display = 'block';
+        resultDiv.textContent = "No disabilities detected based on your answers. For a formal diagnosis, please consult a healthcare professional.";
+      } else {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = "<strong>Possible disabilities based on your answers:</strong><ul>" +
+          Array.from(selectedDisabilities).map(d => `<li>${d}</li>`).join('') +
+          "</ul><p>This is a preliminary self-assessment. For a formal diagnosis, please consult a healthcare professional.</p>";
+      }
+    }
+
+    renderQuestion(currentQuestionIndex);
+  </script>
+</body>
+</html>
